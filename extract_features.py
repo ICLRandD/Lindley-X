@@ -1,5 +1,5 @@
 """
-This script extracts features for training and testing the Lindley-X reportability model.
+This script extracts features for testing the Lindley-X reportability model.
 The script takes a path to a directory of plain text files of judgments and processes the 
 judgment text to extract a range features that can be used to predict whether an 
 the judgment is reportable or not. 

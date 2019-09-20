@@ -1,10 +1,9 @@
 """
-This script extracts features for testing the Lindley-X reportability model.
-The script takes a path to a directory of plain text files of judgments and processes the 
-judgment text to extract a range features that can be used to predict whether an 
-the judgment is reportable or not. 
+Extract features from plain text judgments for the Lindley-X reportability model.
 
-$ python3 extract_features.py path/to/text/files path/to/output/output.csv 10
+This script is called by apply_model.py. It receives the contents of the text file as a
+string, creates a spaCy Doc and uses the en_blackstone_proto model to assist in the extraction
+of the features, which returnes as a list of tuples. 
 """
 
 import pandas as pd
@@ -14,7 +13,6 @@ from spacy.tokens import Doc
 from typing import List, Tuple
 from wasabi import Printer
 import plac
-import glob
 
 msg = Printer()
 nlp = spacy.load("en_blackstone_proto")
@@ -23,7 +21,6 @@ merge_ents = nlp.create_pipe("merge_entities")
 nlp.add_pipe(merge_ents, last=True)
 
 FEATURES = []
-
 
 def predicted_stats(document: str) -> Tuple:
     """
@@ -132,34 +129,10 @@ def total_cat_types(document: str) -> Tuple:
 
     return (axiom, conclusion, issue, legal_test, uncat)
 
-
-def check_num_files(input_dir: Path, observations: int) -> None:
-    """
-    Check whether the number of observations requested exceeds the 
-    number of files in the input_dir
-    """
-    num_files = len(list(input_dir.glob("*")))
-    if num_files < observations:
-        msg.warn(
-            f"""You have asked to extract {observations} samples, but your input directory only has {num_files} file(s). /
-            Only {num_files} samples(s) will be extracted."""
-        )
-
-
-@plac.annotations(
-    input_dir=("Path to directory with text files", "positional", None, Path),
-    output_file=("Output CSV file", "positional", None, Path),
-    observations=("Number of samples to extract", "positional", None, int),
-)
-def main(input_dir=None, output_file=None, observations=None):
-    iter = 0
-
-    observations = observations - 1
+def feature_extraction(input_dir: Path) -> List:
     directory = Path(input_dir)
     msg.info(f"Iterating over files and extracting sample(s).")
     for filename in directory.iterdir():
-        check_num_files(input_dir, observations)
-        source_dir = str(input_dir)
         f = open(filename)
         document = f.read()
         document = document.replace("\n", " ")
@@ -198,15 +171,5 @@ def main(input_dir=None, output_file=None, observations=None):
             special_to_sents,
         )
         FEATURES.append(features)
-        iter += 1
-
-        if iter > observations:
-            break
-
-    df = pd.DataFrame(FEATURES)
-    msg.good(f"Exporting sample(s) to {output_file}!")
-    df.to_csv(output_file, index=False)
-
-
-if __name__ == "__main__":
-    plac.call(main)
+    return FEATURES
+        

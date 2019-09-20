@@ -60,6 +60,38 @@ The Lindley-X model therefore made the following assumptions:
 
 2. The presence of the raw judgment but the absence of a fully reported version of the case was taken as a signal that the case was not significant. 
 
+### Feature engineering
+
+The presence or absence of a law report provided a convenient method for gathering labelled examples for both classes for the binary classification task Lindley-X is directed towards. The intuition driving our approach feature extraction approach was that significant cases bear qualities that can be quantitatively evaluated that less significant cases inherently lack. 
+
+Our assumptions were as follows:
+
+* The presence of "legal entities", such as references to case law, would be proportionately higher in significant cases by reference to the length of the judgment than less significant cases.
+* By virtue of the fact that significant judgments have a tendency to be more common where judgment was reserved and handed-down in writing and less significant judgments would be given orally and extemporaneously, significant cases would tend to be longer than less significant cases.
+
+Crucially, we were keen to avoid extracting features that would require the training material to be in a structured form - the feature extraction would be based exclusively on components that could be gleaned from the training data without recourse to parsing a marked-up version of the judgments. A strategy dependant on pre-existing markup would render the model useless to pretty much everyone outside of ICLR. For this reason, our feature engineering strategy did not include two features that were assumed to of value to the model:
+
+* the court giving judgment
+* the number of judges (or, the bench strength)
+
+
+All of the feature extraction was handled probalistically by applying the prototype Blackstone model to the judgment text. The features included in the model are as follows:
+              
+     
+* the total number of tokens in the judgment (words and punctuation marks)
+* the total number of entities identified in the judgment by Blackstone
+* the percentage of merged entity tokens to the overall token count (`total entities / total tokens`)
+* the number of case citations in the document identified by Blackstone
+* the total number of sentences identified by Blackstone
+* the total number of sentences categorised by Blackstone as postulating an axiom
+* the total number of sentences categorised by Blackstone as postulating a conclusion
+* the total number of sentences categorised by Blackstone as discussing an issue in the case
+* the total number of sentences categorised by Blackstone as discussing a legal test
+* the total number of uncategorised sentences
+* the total number of sentences categorised as an axiom, conclusion, issue or legal test
+* the percentage of sentences categorised as an axiom, conclusion, issue or legal test to the total number of sentences in the judgment
+
+
 
 
 

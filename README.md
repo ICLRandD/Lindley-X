@@ -18,9 +18,11 @@
 
 Lindley-X is executed from the command line and takes three positional arguments:
 
-`input_dir` which is the path to a directory consisting of one or more judgments in plain-text format.
-`model` which is the path to the Lindley-X model stored in this repo's `model` directory
-`output_file` which is the path to a `.csv` file the model's predictions are written to
+* `input_dir` which is the path to a directory consisting of one or more judgments in plain-text format.
+
+* `model` which is the path to the Lindley-X model stored in this repo's `model` directory
+
+* `output_file` which is the path to a `.csv` file the model's predictions are written to
 
 The Lindley-X model is applied from the command line, like so:
 
